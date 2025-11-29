@@ -1,0 +1,39 @@
+import { Request, Response } from "express";
+import catchAsync from "../../utils/catchAsync";
+import { IJwtPayload } from "../../types/common";
+import sendResponse from "../../utils/sendResponse";
+import httpStatus from "http-status";
+import { UserService } from "./user.service";
+
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+  // const filters = pick(req.query, userFilterableFields) // searching , filtering
+  // const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]) // pagination and sorting
+
+  const result = await UserService.getAllUsers();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "User retrive successfully!",
+    // meta: result.meta,
+    data: result,
+  });
+});
+
+const getMyProfile = catchAsync(
+  async (req: Request & { user?: IJwtPayload }, res: Response) => {
+    const user = req.user as IJwtPayload;
+    const result = await UserService.getMyProfile(user);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "My profile data fetched!",
+      data: result,
+    });
+  }
+);
+
+export const UserController = {
+  getAllUsers,
+  getMyProfile,
+};
