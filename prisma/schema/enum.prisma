@@ -22,3 +22,9 @@ enum TravelType {
   COUPLE
   GROUP
 }
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
