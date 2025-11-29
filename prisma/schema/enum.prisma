@@ -1,5 +1,6 @@
 enum UserRole {
   ADMIN
+  TRAVELER
 }
 
 enum UserStatus {
@@ -12,4 +13,12 @@ enum Gender {
   MALE
   FEMALE
   OTHER
+}
+
+enum TravelType {
+  SOLO
+  FAMILY
+  FRIENDS
+  COUPLE
+  GROUP
 }

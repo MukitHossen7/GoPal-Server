@@ -1,0 +1,30 @@
+model TravelPlan {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  destination String
+  startDate   DateTime
+  endDate     DateTime
+  budgetRange String
+  travelType  TravelType
+  visibility  Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  travelerId  String
+  traveler    Traveler   @relation(fields: [travelerId], references: [id])
+  reviews     Review[]
+
+  @@map("travelPlans")
+}
+
+model Review {
+  id           String     @id @default(uuid())
+  rating       Int
+  comment      String?
+  travelerId   String
+  traveler     Traveler   @relation(fields: [travelerId], references: [id])
+  travelPlanId String
+  travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
