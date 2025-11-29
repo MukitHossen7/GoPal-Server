@@ -2,7 +2,7 @@ model User {
   id                 String     @id @default(uuid())
   email              String     @unique
   password           String?
-  role               UserRole
+  role               UserRole   @default(TRAVELER)
   needPasswordChange Boolean    @default(true)
   gender             Gender?
   status             UserStatus @default(ACTIVE)
@@ -40,8 +40,8 @@ model Traveler {
   address            String?
   profileImage       String?
   bio                String?
-  travelInterests    String[]
-  visitedCountries   String[]
+  travelInterests    String[]     @default([])
+  visitedCountries   String[]     @default([])
   currentLocation    String?
   averageRating      Float        @default(0.0)
   isVerifiedTraveler Boolean      @default(false)
