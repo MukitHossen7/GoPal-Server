@@ -58,7 +58,58 @@ const getAllTravelers = async (filters: any, options: TOptions) => {
   };
 };
 
-const getMyProfile = async (user: IJwtPayload) => {};
+const getMyProfile = async (user: IJwtPayload) => {
+  if (!user?.email || !user?.role) {
+    throw new Error("Invalid user token");
+  }
+
+  let profileData;
+
+  switch (user.role) {
+    case UserRole.ADMIN:
+      profileData = await prisma.admin.findUnique({
+        where: { email: user.email },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              needPasswordChange: true,
+              role: true,
+              status: true,
+            },
+          },
+        },
+      });
+      break;
+
+    case UserRole.TRAVELER:
+      profileData = await prisma.traveler.findUnique({
+        where: { email: user.email },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              needPasswordChange: true,
+              role: true,
+              status: true,
+            },
+          },
+        },
+      });
+      break;
+
+    default:
+      throw new Error("Unauthorized user role");
+  }
+
+  if (!profileData) {
+    throw new Error("Profile not found");
+  }
+
+  return profileData;
+};
 
 const register = async (payload: ITraveler) => {
   const hashPassword = await bcrypt.hash(
