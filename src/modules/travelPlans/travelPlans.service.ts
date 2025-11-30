@@ -1,7 +1,10 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../config/db";
 import AppError from "../../errorHelpers/AppError";
+import { calculatePagination, TOptions } from "../../utils/pagenationHelpers";
 import { ITravelPlan } from "./travelPlans.interface";
 
+//create travel plan
 const createTravelPlan = async (plan: ITravelPlan, travelerEmail: string) => {
   // Step 1: find the traveler using email
   const traveler = await prisma.traveler.findUnique({
@@ -40,9 +43,67 @@ const createTravelPlan = async (plan: ITravelPlan, travelerEmail: string) => {
   return result;
 };
 
-const getTravelPlanById = (id: string) => {};
+//Get all Travel plans
+const getAllTravelPlans = async (filters: any, options: TOptions) => {
+  const { page, limit, skip, sortBy, sortOrder } = calculatePagination(options);
+  const { searchTerm, ...filterData } = filters;
 
-const getAllTravelPlans = () => {};
+  const andConditions: Prisma.TravelPlanWhereInput[] = [];
+
+  if (searchTerm) {
+    andConditions.push({
+      OR: [
+        { destination: { contains: searchTerm, mode: "insensitive" } },
+        { title: { contains: searchTerm, mode: "insensitive" } },
+      ],
+    } as any);
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    });
+  }
+
+  const whereConditions: Prisma.TravelPlanWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const result = await prisma.travelPlan.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+    include: {
+      traveler: {
+        select: {
+          name: true,
+          email: true,
+          averageRating: true,
+        },
+      },
+    },
+  });
+
+  const total = await prisma.travelPlan.count({ where: whereConditions });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+    data: result,
+  };
+};
+
+const getTravelPlanById = (id: string) => {};
 
 const updateTravelPlan = (id: string, payload: Partial<ITravelPlan>) => {};
 

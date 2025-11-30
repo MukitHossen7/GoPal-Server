@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import { TravelService } from "./travelPlans.service";
 import sendResponse from "../../utils/sendResponse";
 import { IJwtPayload } from "../../types/common";
+import { pick } from "../../utils/pick";
 
 const createTravelPlan = catchAsync(
   async (req: Request & { user?: IJwtPayload }, res: Response) => {
@@ -35,13 +36,17 @@ const getTravelPlanById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllTravelPlans = catchAsync(async (req: Request, res: Response) => {
-  const result = await TravelService.getAllTravelPlans();
+  const filters = pick(req.query, ["searchTerm", "destination", "travelType"]);
+  const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+
+  const result = await TravelService.getAllTravelPlans(filters, options);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Get All Travel Plane successfully",
-    data: result,
+    message: "Travel Plans retrieved successfully",
+    meta: result.meta,
+    data: result.data,
   });
 });
 
