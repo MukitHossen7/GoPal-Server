@@ -28,3 +28,9 @@ enum PaymentStatus {
   COMPLETED
   FAILED
 }
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

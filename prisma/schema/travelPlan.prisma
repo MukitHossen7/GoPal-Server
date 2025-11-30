@@ -1,18 +1,19 @@
 model TravelPlan {
-  id          String     @id @default(uuid())
-  title       String
-  description String?
-  destination String
-  startDate   DateTime
-  endDate     DateTime
-  budgetRange String
-  travelType  TravelType
-  visibility  Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  travelerId  String
-  traveler    Traveler   @relation(fields: [travelerId], references: [id])
-  reviews     Review[]
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  destination  String
+  startDate    DateTime
+  endDate      DateTime
+  budgetRange  String
+  travelType   TravelType
+  visibility   Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  travelerId   String
+  traveler     Traveler      @relation(fields: [travelerId], references: [id])
+  reviews      Review[]
+  tripRequests TripRequest[]
 
   @@map("travelPlans")
 }
@@ -27,6 +28,20 @@ model Review {
   travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+}
+
+model TripRequest {
+  id           String        @id @default(uuid())
+  travelPlanId String
+  travelPlan   TravelPlan    @relation(fields: [travelPlanId], references: [id])
+  travelerId   String
+  traveler     Traveler      @relation(fields: [travelerId], references: [id])
+  status       RequestStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([travelPlanId, travelerId]) // একজন এক ট্রিপে একবারই রিকোয়েস্ট করতে পারবে
+  @@map("tripRequests")
 }
 
 model Payment {
