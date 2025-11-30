@@ -1,8 +1,9 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { prisma } from "../../config/db";
 import AppError from "../../errorHelpers/AppError";
 import { calculatePagination, TOptions } from "../../utils/pagenationHelpers";
 import { ITravelPlan } from "./travelPlans.interface";
+import { IJwtPayload } from "../../types/common";
 
 //create travel plan
 const createTravelPlan = async (plan: ITravelPlan, travelerEmail: string) => {
@@ -119,9 +120,73 @@ const getTravelPlanById = async (id: string) => {
   return result;
 };
 
-const updateTravelPlan = (id: string, payload: Partial<ITravelPlan>) => {};
+const updateTravelPlan = async (
+  id: string,
+  payload: Partial<ITravelPlan>,
+  travelerData: IJwtPayload
+) => {
+  const traveler = await prisma.traveler.findUnique({
+    where: {
+      email: travelerData.email,
+    },
+  });
 
-const deleteTravelPlan = (id: string) => {};
+  if (!traveler) {
+    throw new AppError(404, "Traveler not found");
+  }
+
+  const travelPlan = await prisma.travelPlan.findUnique({
+    where: {
+      id: id,
+    },
+  });
+
+  if (!travelPlan) throw new AppError(404, "Travel Plan not found");
+
+  // Check ownership
+  if (travelPlan.travelerId !== traveler.id) {
+    throw new AppError(403, "You are not allowed to update this travel plan");
+  }
+
+  // Update plan
+  const updatedPlan = await prisma.travelPlan.update({
+    where: { id: id },
+    data: payload,
+  });
+
+  return updatedPlan;
+};
+
+const deleteTravelPlan = async (id: string, travelerData: IJwtPayload) => {
+  const traveler = await prisma.traveler.findUnique({
+    where: {
+      email: travelerData.email,
+    },
+  });
+
+  if (!traveler) {
+    throw new AppError(404, "Traveler not found");
+  }
+
+  // Check if travel plan exists
+  const travelPlan = await prisma.travelPlan.findUnique({ where: { id: id } });
+
+  if (!travelPlan) throw new AppError(404, "Travel Plan not found");
+
+  // Check permission: either owner traveler or admin
+  if (
+    travelerData.role !== UserRole.ADMIN &&
+    travelPlan.travelerId !== traveler.id
+  ) {
+    throw new AppError(403, "You are not allowed to delete this travel plan");
+  }
+
+  const deletedPlan = await prisma.travelPlan.delete({
+    where: { id: id },
+  });
+
+  return deletedPlan;
+};
 
 export const TravelService = {
   createTravelPlan,

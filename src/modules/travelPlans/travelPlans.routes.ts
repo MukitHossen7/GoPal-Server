@@ -3,7 +3,10 @@ import { checkAuth } from "../../middlewares/checkAuth";
 import { UserRole } from "@prisma/client";
 import { TravelController } from "./travelPlans.controller";
 import { zodValidateRequest } from "../../middlewares/zodValidateRequest";
-import { createTravelPlanZodSchema } from "./travelPlans.zod.validation";
+import {
+  createTravelPlanZodSchema,
+  updateTravelPlanZodSchema,
+} from "./travelPlans.zod.validation";
 
 const travelPlanRoute = express.Router();
 
@@ -24,6 +27,7 @@ travelPlanRoute.get(
 travelPlanRoute.patch(
   "/:id",
   checkAuth(UserRole.TRAVELER),
+  zodValidateRequest(updateTravelPlanZodSchema),
   TravelController.updateTravelPlan
 );
 
