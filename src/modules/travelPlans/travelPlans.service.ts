@@ -103,7 +103,21 @@ const getAllTravelPlans = async (filters: any, options: TOptions) => {
   };
 };
 
-const getTravelPlanById = (id: string) => {};
+const getTravelPlanById = async (id: string) => {
+  const result = await prisma.travelPlan.findUniqueOrThrow({
+    where: { id },
+    include: {
+      traveler: {
+        select: {
+          name: true,
+          email: true,
+          averageRating: true,
+        },
+      },
+    },
+  });
+  return result;
+};
 
 const updateTravelPlan = (id: string, payload: Partial<ITravelPlan>) => {};
 

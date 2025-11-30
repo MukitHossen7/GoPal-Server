@@ -30,7 +30,7 @@ const getTravelPlanById = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Get by Id Travel Plane successfully",
+    message: "Travel Plan retrieved successfully",
     data: result,
   });
 });
