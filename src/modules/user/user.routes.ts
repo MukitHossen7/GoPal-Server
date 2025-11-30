@@ -3,7 +3,11 @@ import { checkAuth } from "../../middlewares/checkAuth";
 import { UserRole } from "@prisma/client";
 import { UserController } from "./user.controller";
 import { zodValidateRequest } from "../../middlewares/zodValidateRequest";
-import { createTravelerZodSchema } from "./user.zod.validation";
+import {
+  createTravelerZodSchema,
+  updateTravelerProfileZodSchema,
+} from "./user.zod.validation";
+import { multerUpload } from "../../config/multer.config";
 
 const userRoute = express.Router();
 
@@ -19,6 +23,14 @@ userRoute.post(
   "/register",
   zodValidateRequest(createTravelerZodSchema),
   UserController.register
+);
+
+userRoute.patch(
+  "/update-my-profile",
+  checkAuth(UserRole.TRAVELER, UserRole.ADMIN),
+  multerUpload.single("file"),
+  zodValidateRequest(updateTravelerProfileZodSchema),
+  UserController.updateMyProfile
 );
 
 export default userRoute;

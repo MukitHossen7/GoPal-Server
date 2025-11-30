@@ -16,4 +16,9 @@ export default {
     RESET_PASS_TOKEN_EXPIRES_IN: process.env
       .RESET_PASS_TOKEN_EXPIRES_IN as string,
   },
+  CLOUDINARY: {
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
+  },
 };

@@ -2,18 +2,25 @@ import { Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync";
 import { TravelService } from "./travelPlans.service";
 import sendResponse from "../../utils/sendResponse";
+import { IJwtPayload } from "../../types/common";
 
-const createTravelPlan = catchAsync(async (req: Request, res: Response) => {
-  const payload = req.body;
-  const result = await TravelService.createTravelPlan(payload);
+const createTravelPlan = catchAsync(
+  async (req: Request & { user?: IJwtPayload }, res: Response) => {
+    const payload = req.body;
+    const travelerEmail = req?.user?.email;
+    const result = await TravelService.createTravelPlan(
+      payload,
+      travelerEmail as string
+    );
 
-  sendResponse(res, {
-    statusCode: 201,
-    success: true,
-    message: "Create Travel Plane successfully",
-    data: result,
-  });
-});
+    sendResponse(res, {
+      statusCode: 201,
+      success: true,
+      message: "Create Travel Plane successfully",
+      data: result,
+    });
+  }
+);
 
 const getTravelPlanById = catchAsync(async (req: Request, res: Response) => {
   const travelPlanId = req.params.id;

@@ -9,3 +9,14 @@ export const createTravelerZodSchema = z.object({
   }),
   email: z.email(),
 });
+
+export const updateTravelerProfileZodSchema = z.object({
+  name: z.string().optional(),
+  contactNumber: z.string().optional(),
+  address: z.string().optional(),
+  profileImage: z.string().url().optional(),
+  bio: z.string().optional(),
+  travelInterests: z.array(z.string()).optional(),
+  visitedCountries: z.array(z.string()).optional(),
+  currentLocation: z.string().optional(),
+});

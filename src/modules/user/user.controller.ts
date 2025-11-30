@@ -46,8 +46,27 @@ const register = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateMyProfile = catchAsync(
+  async (req: Request & { user?: IJwtPayload }, res: Response) => {
+    const user = req.user as IJwtPayload;
+    // const profileImage = req.file?.path;
+    const payload = {
+      ...req.body,
+      profileImage: req.file?.path,
+    };
+    const result = await UserService.updateMyProfile(user, payload);
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "My profile updated!",
+      data: result,
+    });
+  }
+);
+
 export const UserController = {
   getAllUsers,
   getMyProfile,
   register,
+  updateMyProfile,
 };

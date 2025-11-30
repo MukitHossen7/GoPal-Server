@@ -23,7 +23,7 @@ model Admin {
   email         String   @unique
   contactNumber String?
   address       String?
-  profilePhoto  String?
+  profileImage  String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
