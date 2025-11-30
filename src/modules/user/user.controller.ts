@@ -4,19 +4,19 @@ import { IJwtPayload } from "../../types/common";
 import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import { UserService } from "./user.service";
+import { pick } from "../../utils/pick";
 
-const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  // const filters = pick(req.query, userFilterableFields) // searching , filtering
-  // const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]) // pagination and sorting
-
-  const result = await UserService.getAllUsers();
+const getAllTravelers = catchAsync(async (req: Request, res: Response) => {
+  const filters = pick(req.query, ["searchTerm", "currentLocation"]);
+  const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+  const result = await UserService.getAllTravelers(filters, options);
 
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "User retrive successfully!",
-    // meta: result.meta,
-    data: result,
+    message: "Travelers retrieved successfully",
+    meta: result.meta,
+    data: result.data,
   });
 });
 
@@ -41,7 +41,7 @@ const register = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: 201,
     success: true,
-    message: "Create Traveler successfully",
+    message: "Traveler registered successfully!",
     data: result,
   });
 });
@@ -65,7 +65,7 @@ const updateMyProfile = catchAsync(
 );
 
 export const UserController = {
-  getAllUsers,
+  getAllTravelers,
   getMyProfile,
   register,
   updateMyProfile,

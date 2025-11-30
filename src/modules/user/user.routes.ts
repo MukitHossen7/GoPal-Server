@@ -11,7 +11,7 @@ import { multerUpload } from "../../config/multer.config";
 
 const userRoute = express.Router();
 
-userRoute.get("/", checkAuth(UserRole.ADMIN), UserController.getAllUsers);
+userRoute.get("/", UserController.getAllTravelers);
 
 userRoute.get(
   "/me",
