@@ -21,4 +21,11 @@ export default {
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
   },
+  STRIPE: {
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY as string,
+    STRIPE_PUBLISHABLe_KEY: process.env.STRIPE_PUBLISHABLe_KEY as string,
+    success_url: process.env.success_url as string,
+    cancel_url: process.env.cancel_url as string,
+    webhook_secret: process.env.webhook_secret as string,
+  },
 };

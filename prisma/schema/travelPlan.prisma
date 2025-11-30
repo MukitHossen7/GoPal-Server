@@ -30,13 +30,14 @@ model Review {
 }
 
 model Payment {
-  id              String        @id @default(uuid())
-  amount          Float
-  status          PaymentStatus
-  subscription    String
-  stripeSessionId String?
-  travelerId      String
-  traveler        Traveler      @relation(fields: [travelerId], references: [id])
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id                 String        @id @default(uuid())
+  amount             Float
+  status             PaymentStatus
+  subscription       String
+  transactionId      String        @unique
+  paymentGatewayData Json?
+  travelerId         String
+  traveler           Traveler      @relation(fields: [travelerId], references: [id])
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 }
