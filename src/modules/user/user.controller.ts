@@ -45,6 +45,7 @@ const register = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 export const UserController = {
   getAllUsers,
   getMyProfile,

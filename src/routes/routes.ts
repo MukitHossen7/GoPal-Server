@@ -1,10 +1,12 @@
 import { Router } from "express";
 import authRoute from "../modules/auth/auth.routes";
 import userRoute from "../modules/user/user.routes";
+import travelPlanRoute from "../modules/travelPlans/travelPlans.routes";
 
 const routes = Router();
 
 routes.use("/auth", authRoute);
-routes.use("/user", userRoute);
+routes.use("/users", userRoute);
+routes.use("/travel-plans", travelPlanRoute);
 
 export default routes;
