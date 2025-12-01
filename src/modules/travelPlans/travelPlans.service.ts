@@ -44,6 +44,66 @@ const createTravelPlan = async (plan: ITravelPlan, travelerEmail: string) => {
   return result;
 };
 
+const getTravelPlanMatches = async (user: IJwtPayload) => {
+  // 1.find current user profile and interest findOut
+  const currentUser = await prisma.traveler.findUnique({
+    where: { email: user.email },
+  });
+
+  if (!currentUser) {
+    throw new AppError(404, "User profile not found");
+  }
+
+  const myInterests = currentUser.travelInterests || [];
+
+  if (myInterests.length === 0) {
+    return await prisma.travelPlan.findMany({
+      where: {
+        travelerId: { not: currentUser.id },
+      },
+      take: 10,
+      orderBy: { createdAt: "desc" },
+      include: {
+        traveler: {
+          select: {
+            name: true,
+            email: true,
+            profileImage: true,
+            averageRating: true,
+            travelInterests: true,
+          },
+        },
+      },
+    });
+  }
+
+  const matchedPlans = await prisma.travelPlan.findMany({
+    where: {
+      travelerId: { not: currentUser.id },
+      traveler: {
+        travelInterests: {
+          hasSome: myInterests,
+        },
+      },
+    },
+    take: 20,
+    orderBy: { createdAt: "desc" },
+    include: {
+      traveler: {
+        select: {
+          name: true,
+          email: true,
+          profileImage: true,
+          averageRating: true,
+          travelInterests: true,
+        },
+      },
+    },
+  });
+
+  return matchedPlans;
+};
+
 //Get all Travel plans
 const getAllTravelPlans = async (filters: any, options: TOptions) => {
   const { page, limit, skip, sortBy, sortOrder } = calculatePagination(options);
@@ -194,4 +254,5 @@ export const TravelService = {
   getAllTravelPlans,
   updateTravelPlan,
   deleteTravelPlan,
+  getTravelPlanMatches,
 };

@@ -9,6 +9,14 @@ const requestToJoin = async (user: IJwtPayload, travelPlanId: string) => {
   });
   if (!traveler) throw new AppError(404, "Traveler profile not found");
 
+  // Subscription Check
+  if (!traveler.isVerifiedTraveler) {
+    throw new AppError(
+      402, // Payment Required
+      "You need a premium subscription to request joining a trip."
+    );
+  }
+
   const trip = await prisma.travelPlan.findUnique({
     where: { id: travelPlanId },
   });

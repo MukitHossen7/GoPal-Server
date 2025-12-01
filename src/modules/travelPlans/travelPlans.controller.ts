@@ -23,6 +23,20 @@ const createTravelPlan = catchAsync(
   }
 );
 
+const getTravelPlanMatches = catchAsync(
+  async (req: Request & { user?: IJwtPayload }, res: Response) => {
+    const user = req.user as IJwtPayload;
+    const result = await TravelService.getTravelPlanMatches(user);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Matched travel plans retrieved successfully",
+      data: result,
+    });
+  }
+);
+
 const getTravelPlanById = catchAsync(async (req: Request, res: Response) => {
   const travelPlanId = req.params.id;
   const result = await TravelService.getTravelPlanById(travelPlanId);
@@ -94,4 +108,5 @@ export const TravelController = {
   getAllTravelPlans,
   updateTravelPlan,
   deleteTravelPlan,
+  getTravelPlanMatches,
 };

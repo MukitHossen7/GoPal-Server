@@ -17,6 +17,13 @@ travelPlanRoute.post(
   TravelController.createTravelPlan
 );
 
+// 2. Get Matches
+travelPlanRoute.get(
+  "/match",
+  checkAuth(UserRole.TRAVELER),
+  TravelController.getTravelPlanMatches
+);
+
 travelPlanRoute.get("/", TravelController.getAllTravelPlans);
 travelPlanRoute.get(
   "/:id",
