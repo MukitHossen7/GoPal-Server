@@ -14,6 +14,12 @@ const userRoute = express.Router();
 userRoute.get("/", UserController.getAllTravelers);
 
 userRoute.get(
+  "/matches",
+  checkAuth(UserRole.TRAVELER),
+  UserController.getTravelBuddyMatches
+);
+
+userRoute.get(
   "/me",
   checkAuth(UserRole.ADMIN, UserRole.TRAVELER),
   UserController.getMyProfile

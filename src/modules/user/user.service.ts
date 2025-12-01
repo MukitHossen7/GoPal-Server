@@ -58,6 +58,62 @@ const getAllTravelers = async (filters: any, options: TOptions) => {
   };
 };
 
+const getRecommendedTravelers = async (user: IJwtPayload) => {
+  const currentUser = await prisma.traveler.findUnique({
+    where: { email: user.email },
+    select: { id: true, travelInterests: true },
+  });
+
+  if (!currentUser) {
+    throw new AppError(404, "User profile not found");
+  }
+
+  if (
+    !currentUser.travelInterests ||
+    currentUser.travelInterests.length === 0
+  ) {
+    return await prisma.traveler.findMany({
+      where: {
+        id: { not: currentUser.id },
+      },
+      take: 10,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        profileImage: true,
+        travelInterests: true,
+        averageRating: true,
+        currentLocation: true,
+      },
+    });
+  }
+
+  const matchedTravelers = await prisma.traveler.findMany({
+    where: {
+      id: { not: currentUser.id },
+      travelInterests: {
+        hasSome: currentUser.travelInterests,
+      },
+    },
+    take: 20,
+    orderBy: {
+      averageRating: "desc",
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      profileImage: true,
+      travelInterests: true,
+      averageRating: true,
+      currentLocation: true,
+    },
+  });
+
+  return matchedTravelers;
+};
+
 const getMyProfile = async (user: IJwtPayload) => {
   if (!user?.email || !user?.role) {
     throw new Error("Invalid user token");
@@ -202,4 +258,5 @@ export const UserService = {
   getAllTravelers,
   register,
   updateMyProfile,
+  getRecommendedTravelers,
 };

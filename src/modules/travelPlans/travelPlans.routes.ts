@@ -19,7 +19,7 @@ travelPlanRoute.post(
 
 // 2. Get Matches
 travelPlanRoute.get(
-  "/match",
+  "/matches",
   checkAuth(UserRole.TRAVELER),
   TravelController.getTravelPlanMatches
 );

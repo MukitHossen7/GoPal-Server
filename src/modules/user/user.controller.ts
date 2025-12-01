@@ -20,6 +20,20 @@ const getAllTravelers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getTravelBuddyMatches = catchAsync(
+  async (req: Request & { user?: IJwtPayload }, res: Response) => {
+    const user = req.user as IJwtPayload;
+    const result = await UserService.getRecommendedTravelers(user);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Recommended travelers retrieved successfully",
+      data: result,
+    });
+  }
+);
+
 const getMyProfile = catchAsync(
   async (req: Request & { user?: IJwtPayload }, res: Response) => {
     const user = req.user as IJwtPayload;
@@ -69,4 +83,5 @@ export const UserController = {
   getMyProfile,
   register,
   updateMyProfile,
+  getTravelBuddyMatches,
 };
