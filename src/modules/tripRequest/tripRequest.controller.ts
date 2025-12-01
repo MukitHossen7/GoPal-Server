@@ -7,8 +7,8 @@ import { TripRequestService } from "./tripRequest.service";
 const sendTripRequest = catchAsync(
   async (req: Request & { user?: IJwtPayload }, res: Response) => {
     const user = req.user as IJwtPayload;
-    const { tripId } = req.body;
-    const result = await TripRequestService.requestToJoin(user, tripId);
+    const { travelPlanId } = req.body;
+    const result = await TripRequestService.requestToJoin(user, travelPlanId);
     sendResponse(res, {
       statusCode: 201,
       success: true,

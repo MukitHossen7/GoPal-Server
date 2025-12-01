@@ -9,6 +9,7 @@ import {
 } from "./reviews.zod.validation";
 
 const reviewRoute = express.Router();
+
 reviewRoute.post(
   "/",
   checkAuth(UserRole.TRAVELER),

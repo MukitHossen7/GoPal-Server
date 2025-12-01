@@ -3,13 +3,15 @@ import { prisma } from "../../config/db";
 import AppError from "../../errorHelpers/AppError";
 import { IJwtPayload } from "../../types/common";
 
-const requestToJoin = async (user: IJwtPayload, tripId: string) => {
+const requestToJoin = async (user: IJwtPayload, travelPlanId: string) => {
   const traveler = await prisma.traveler.findUnique({
     where: { email: user.email },
   });
   if (!traveler) throw new AppError(404, "Traveler profile not found");
 
-  const trip = await prisma.travelPlan.findUnique({ where: { id: tripId } });
+  const trip = await prisma.travelPlan.findUnique({
+    where: { id: travelPlanId },
+  });
   if (!trip) throw new AppError(404, "Trip not found");
 
   // Check if own trip
@@ -21,7 +23,7 @@ const requestToJoin = async (user: IJwtPayload, tripId: string) => {
   const existingRequest = await prisma.tripRequest.findUnique({
     where: {
       travelPlanId_travelerId: {
-        travelPlanId: tripId,
+        travelPlanId: travelPlanId,
         travelerId: traveler.id,
       },
     },
@@ -31,7 +33,7 @@ const requestToJoin = async (user: IJwtPayload, tripId: string) => {
 
   const result = await prisma.tripRequest.create({
     data: {
-      travelPlanId: tripId,
+      travelPlanId: travelPlanId,
       travelerId: traveler.id,
     },
   });
