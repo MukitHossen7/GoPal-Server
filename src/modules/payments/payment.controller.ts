@@ -6,7 +6,6 @@ import { stripe } from "../../config/stripe.config";
 import { PaymentService } from "./payment.service";
 import { IJwtPayload } from "../../types/common";
 
-// Subscription কেনা শুরু করার কন্ট্রোলার
 const createSubscription = catchAsync(
   async (req: Request & { user?: IJwtPayload }, res: Response) => {
     const travelerData = req.user as IJwtPayload;
@@ -24,7 +23,7 @@ const createSubscription = catchAsync(
   }
 );
 
-// Webhook কন্ট্রোলার
+// Webhook
 const stripeWebhook = catchAsync(async (req: Request, res: Response) => {
   const sig = req.headers["stripe-signature"] as string;
   const webhookSecret = config.STRIPE.webhook_secret as string;

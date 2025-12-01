@@ -17,6 +17,21 @@ const requestToJoin = async (user: IJwtPayload, travelPlanId: string) => {
     );
   }
 
+  if (traveler.subscriptionEndDate) {
+    const currentDate = new Date();
+    if (traveler.subscriptionEndDate < currentDate) {
+      await prisma.traveler.update({
+        where: { id: traveler.id },
+        data: { isVerifiedTraveler: false },
+      });
+
+      throw new AppError(
+        402,
+        "Your subscription has expired. Please renew to join trips."
+      );
+    }
+  }
+
   const trip = await prisma.travelPlan.findUnique({
     where: { id: travelPlanId },
   });

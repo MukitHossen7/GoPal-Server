@@ -65,9 +65,21 @@ const handleWebhook = async (event: Stripe.Event) => {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
-
       // Transaction ID holo Session ID
       const transactionId = session.id;
+
+      // Metadata subscriptionType
+      const subscriptionType =
+        session.metadata?.subscriptionType?.toLowerCase();
+
+      const currentDate = new Date();
+      let newEndDate = new Date(currentDate);
+
+      if (subscriptionType === "yearly") {
+        newEndDate.setFullYear(newEndDate.getFullYear() + 1);
+      } else {
+        newEndDate.setDate(newEndDate.getDate() + 30);
+      }
 
       // Database Transaction: Update Payment AND Update Traveler Status
       await prisma.$transaction(async (tx) => {
@@ -86,6 +98,7 @@ const handleWebhook = async (event: Stripe.Event) => {
             where: { id: payment.travelerId },
             data: {
               isVerifiedTraveler: true,
+              subscriptionEndDate: newEndDate,
             },
           });
         }
