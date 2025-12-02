@@ -31,6 +31,10 @@ const addReview = (user, payload) => __awaiter(void 0, void 0, void 0, function*
     });
     if (!trip)
         throw new AppError_1.default(404, "Trip not found");
+    // 3. Check if the reviewer is the owner of the trip
+    if (traveler.id === trip.travelerId) {
+        throw new AppError_1.default(403, "You cannot review your own travel plan");
+    }
     // 3. Create Review
     const review = yield db_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
         const newReview = yield tx.review.create({
