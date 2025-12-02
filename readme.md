@@ -1,6 +1,6 @@
 # GoPal — Travel Buddy & Meetup Platform
 
-- **Travel Buddy & Meetup Platform** is a comprehensive subscription-based social travel application designed to connect travelers worldwide. It fosters meaningful connections by helping users find compatible companions for upcoming trips. The platform transforms solo journeys into shared adventures by allowing users to **create travel plans**, **discover matches**, **send trip requests**, and **manage itineraries**.
+**Travel Buddy & Meetup Platform** is a comprehensive subscription-based social travel application designed to connect travelers worldwide. It fosters meaningful connections by helping users find compatible companions for upcoming trips. The platform transforms solo journeys into shared adventures by allowing users to **create travel plans**, **discover matches**, **send trip requests**, and **manage itineraries**.
 
 With **role-based access control**, **secure authentication**, and **premium subscription features**, it serves as a bridge between social networking and travel planning, empowering users to explore the world together.
 
