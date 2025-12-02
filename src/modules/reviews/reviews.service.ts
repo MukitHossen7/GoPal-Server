@@ -22,6 +22,11 @@ const addReview = async (
   });
   if (!trip) throw new AppError(404, "Trip not found");
 
+  // 3. Check if the reviewer is the owner of the trip
+  if (traveler.id === trip.travelerId) {
+    throw new AppError(403, "You cannot review your own travel plan");
+  }
+
   // 3. Create Review
   const review = await prisma.$transaction(async (tx) => {
     const newReview = await tx.review.create({
