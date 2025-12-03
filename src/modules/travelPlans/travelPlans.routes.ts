@@ -24,7 +24,11 @@ travelPlanRoute.get(
   TravelController.getTravelPlanMatches
 );
 
-travelPlanRoute.get("/", TravelController.getAllTravelPlans);
+travelPlanRoute.get(
+  "/",
+  checkAuth(UserRole.TRAVELER, UserRole.ADMIN),
+  TravelController.getAllTravelPlans
+);
 travelPlanRoute.get(
   "/:id",
   checkAuth(UserRole.TRAVELER, UserRole.ADMIN),
