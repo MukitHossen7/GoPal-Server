@@ -19,4 +19,5 @@ export const updateTravelerProfileZodSchema = z.object({
   travelInterests: z.array(z.string()).optional(),
   visitedCountries: z.array(z.string()).optional(),
   currentLocation: z.string().optional(),
+  gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
 });

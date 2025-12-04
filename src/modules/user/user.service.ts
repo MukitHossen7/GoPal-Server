@@ -1,4 +1,4 @@
-import { Prisma, UserRole } from "@prisma/client";
+import { Gender, Prisma, UserRole } from "@prisma/client";
 import config from "../../config";
 import { prisma } from "../../config/db";
 import AppError from "../../errorHelpers/AppError";
@@ -133,6 +133,7 @@ const getMyProfile = async (user: IJwtPayload) => {
               needPasswordChange: true,
               role: true,
               status: true,
+              gender: true,
             },
           },
         },
@@ -196,7 +197,7 @@ const register = async (payload: ITraveler) => {
 
 const updateMyProfile = async (
   user: IJwtPayload,
-  payload: Partial<ITraveler>
+  payload: Partial<ITraveler> & { gender?: string } // Gender payload এ থাকতে পারে তাই টাইপ এক্সটেন্ড করা হলো
 ) => {
   const email = user?.email;
   const role = user?.role;
@@ -205,33 +206,51 @@ const updateMyProfile = async (
     throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized user");
   }
 
-  // Email should never be updated
+  // Email should never be updated via this route
   if (payload.email) {
     delete payload.email;
   }
 
   let updatedProfile;
 
-  // If user is TRAVELER
+  // =========================================================
+  // CASE 1: If user is TRAVELER
+  // =========================================================
   if (role === UserRole.TRAVELER) {
-    const traveler = await prisma.traveler.findUnique({ where: { email } });
+    const { gender, ...travelerData } = payload;
 
-    if (!traveler) {
-      throw new AppError(404, "Traveler profile not found");
-    }
+    updatedProfile = await prisma.$transaction(async (tx) => {
+      const traveler = await tx.traveler.findUnique({ where: { email } });
 
-    updatedProfile = await prisma.traveler.update({
-      where: { email },
-      data: {
-        ...payload,
-        updatedAt: new Date(),
-      },
+      if (!traveler) {
+        throw new AppError(404, "Traveler profile not found");
+      }
+
+      // ৩. Traveler
+      const result = await tx.traveler.update({
+        where: { email },
+        data: {
+          ...travelerData,
+          updatedAt: new Date(),
+        },
+      });
+
+      if (gender) {
+        await tx.user.update({
+          where: { email },
+          data: { gender: gender as Gender },
+        });
+      }
+
+      return result;
     });
 
     return updatedProfile;
   }
 
-  // If user is ADMIN
+  // =========================================================
+  // CASE 2: If user is ADMIN
+  // =========================================================
   if (role === UserRole.ADMIN) {
     const admin = await prisma.admin.findUnique({ where: { email } });
 

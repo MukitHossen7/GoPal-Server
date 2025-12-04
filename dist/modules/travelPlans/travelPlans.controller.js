@@ -18,9 +18,9 @@ const travelPlans_service_1 = require("./travelPlans.service");
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const pick_1 = require("../../utils/pick");
 const createTravelPlan = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const payload = req.body;
-    const travelerEmail = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a.email;
+    var _a, _b;
+    const payload = Object.assign(Object.assign({}, req.body), { imageUrl: (_a = req.file) === null || _a === void 0 ? void 0 : _a.path });
+    const travelerEmail = (_b = req === null || req === void 0 ? void 0 : req.user) === null || _b === void 0 ? void 0 : _b.email;
     const result = yield travelPlans_service_1.TravelService.createTravelPlan(payload, travelerEmail);
     (0, sendResponse_1.default)(res, {
         statusCode: 201,
@@ -62,8 +62,9 @@ const getAllTravelPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void
     });
 }));
 const updateTravelPlan = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const travelPlanId = req.params.id;
-    const payload = req.body;
+    const payload = Object.assign(Object.assign({}, req.body), { imageUrl: (_a = req.file) === null || _a === void 0 ? void 0 : _a.path });
     const travelerData = req.user;
     const result = yield travelPlans_service_1.TravelService.updateTravelPlan(travelPlanId, payload, travelerData);
     (0, sendResponse_1.default)(res, {
