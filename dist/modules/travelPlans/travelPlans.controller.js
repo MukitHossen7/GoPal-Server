@@ -29,6 +29,18 @@ const createTravelPlan = (0, catchAsync_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
+const getMyTravelPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const options = (0, pick_1.pick)(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+    const result = yield travelPlans_service_1.TravelService.getMyTravelPlans(user, options);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "My travel plans retrieved successfully",
+        meta: result.meta,
+        data: result.data,
+    });
+}));
 const getTravelPlanMatches = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const result = yield travelPlans_service_1.TravelService.getTravelPlanMatches(user);
@@ -87,6 +99,7 @@ const deleteTravelPlan = (0, catchAsync_1.default)((req, res) => __awaiter(void 
 }));
 exports.TravelController = {
     createTravelPlan,
+    getMyTravelPlans,
     getTravelPlanById,
     getAllTravelPlans,
     updateTravelPlan,

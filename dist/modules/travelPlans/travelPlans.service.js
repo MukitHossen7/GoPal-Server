@@ -28,6 +28,7 @@ const client_1 = require("@prisma/client");
 const db_1 = require("../../config/db");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const pagenationHelpers_1 = require("../../utils/pagenationHelpers");
+const http_status_1 = __importDefault(require("http-status"));
 //create travel plan
 const createTravelPlan = (plan, travelerEmail) => __awaiter(void 0, void 0, void 0, function* () {
     // Step 1: find the traveler using email
@@ -53,6 +54,38 @@ const createTravelPlan = (plan, travelerEmail) => __awaiter(void 0, void 0, void
         data: Object.assign(Object.assign({}, plan), { travelerId: traveler.id }),
     });
     return result;
+});
+const getMyTravelPlans = (user, options) => __awaiter(void 0, void 0, void 0, function* () {
+    const { page, limit, skip, sortBy, sortOrder } = (0, pagenationHelpers_1.calculatePagination)(options);
+    const traveler = yield db_1.prisma.traveler.findUnique({
+        where: {
+            email: user.email,
+        },
+    });
+    if (!traveler) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Traveler profile not found");
+    }
+    const whereConditions = {
+        travelerId: traveler.id, // Relation Field
+    };
+    const result = yield db_1.prisma.travelPlan.findMany({
+        where: whereConditions,
+        skip,
+        take: limit,
+        orderBy: {
+            [sortBy]: sortOrder,
+        },
+    });
+    const total = yield db_1.prisma.travelPlan.count({ where: whereConditions });
+    return {
+        meta: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+        },
+        data: result,
+    };
 });
 const getTravelPlanMatches = (user) => __awaiter(void 0, void 0, void 0, function* () {
     // 1.find current user profile and interest findOut
@@ -226,6 +259,7 @@ const deleteTravelPlan = (id, travelerData) => __awaiter(void 0, void 0, void 0,
 });
 exports.TravelService = {
     createTravelPlan,
+    getMyTravelPlans,
     getTravelPlanById,
     getAllTravelPlans,
     updateTravelPlan,

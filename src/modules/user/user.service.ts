@@ -10,9 +10,8 @@ import { calculatePagination, TOptions } from "../../utils/pagenationHelpers";
 
 const getAllTravelers = async (filters: any, options: TOptions) => {
   const { page, limit, skip, sortBy, sortOrder } = calculatePagination(options);
-  const { searchTerm, ...filterData } = filters;
+  const { searchTerm, gender, ...filterData } = filters;
   const andConditions: Prisma.TravelerWhereInput[] = [];
-
   if (searchTerm) {
     andConditions.push({
       OR: [
@@ -21,6 +20,16 @@ const getAllTravelers = async (filters: any, options: TOptions) => {
         { currentLocation: { contains: searchTerm, mode: "insensitive" } },
       ],
     } as any);
+  }
+
+  if (gender) {
+    andConditions.push({
+      user: {
+        gender: {
+          equals: gender as Gender,
+        },
+      },
+    });
   }
 
   if (Object.keys(filterData).length > 0) {
@@ -81,10 +90,17 @@ const getRecommendedTravelers = async (user: IJwtPayload) => {
         id: true,
         name: true,
         email: true,
+        contactNumber: true,
+        address: true,
         profileImage: true,
+        bio: true,
         travelInterests: true,
+        visitedCountries: true,
+        isVerifiedTraveler: true,
+        subscriptionEndDate: true,
         averageRating: true,
         currentLocation: true,
+        createdAt: true,
       },
     });
   }
@@ -104,10 +120,17 @@ const getRecommendedTravelers = async (user: IJwtPayload) => {
       id: true,
       name: true,
       email: true,
+      contactNumber: true,
+      address: true,
       profileImage: true,
+      bio: true,
       travelInterests: true,
+      visitedCountries: true,
+      isVerifiedTraveler: true,
+      subscriptionEndDate: true,
       averageRating: true,
       currentLocation: true,
+      createdAt: true,
     },
   });
 

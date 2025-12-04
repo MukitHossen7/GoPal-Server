@@ -7,7 +7,7 @@ import { UserService } from "./user.service";
 import { pick } from "../../utils/pick";
 
 const getAllTravelers = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, ["searchTerm", "currentLocation"]);
+  const filters = pick(req.query, ["searchTerm", "currentLocation", "gender"]);
   const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
   const result = await UserService.getAllTravelers(filters, options);
 
