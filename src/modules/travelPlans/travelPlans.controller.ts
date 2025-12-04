@@ -7,7 +7,10 @@ import { pick } from "../../utils/pick";
 
 const createTravelPlan = catchAsync(
   async (req: Request & { user?: IJwtPayload }, res: Response) => {
-    const payload = req.body;
+    const payload = {
+      ...req.body,
+      imageUrl: req.file?.path,
+    };
     const travelerEmail = req?.user?.email;
     const result = await TravelService.createTravelPlan(
       payload,
@@ -67,7 +70,10 @@ const getAllTravelPlans = catchAsync(async (req: Request, res: Response) => {
 const updateTravelPlan = catchAsync(
   async (req: Request & { user?: IJwtPayload }, res: Response) => {
     const travelPlanId = req.params.id;
-    const payload = req.body;
+    const payload = {
+      ...req.body,
+      imageUrl: req.file?.path,
+    };
     const travelerData = req.user as IJwtPayload;
     const result = await TravelService.updateTravelPlan(
       travelPlanId,

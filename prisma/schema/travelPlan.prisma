@@ -3,6 +3,7 @@ model TravelPlan {
   title        String
   description  String?
   destination  String
+  imageUrl     String?
   startDate    DateTime
   endDate      DateTime
   budgetRange  String

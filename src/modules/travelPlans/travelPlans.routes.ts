@@ -7,12 +7,14 @@ import {
   createTravelPlanZodSchema,
   updateTravelPlanZodSchema,
 } from "./travelPlans.zod.validation";
+import { multerUpload } from "../../config/multer.config";
 
 const travelPlanRoute = express.Router();
 
 travelPlanRoute.post(
   "/",
   checkAuth(UserRole.TRAVELER),
+  multerUpload.single("file"),
   zodValidateRequest(createTravelPlanZodSchema),
   TravelController.createTravelPlan
 );
@@ -38,6 +40,7 @@ travelPlanRoute.get(
 travelPlanRoute.patch(
   "/:id",
   checkAuth(UserRole.TRAVELER),
+  multerUpload.single("file"),
   zodValidateRequest(updateTravelPlanZodSchema),
   TravelController.updateTravelPlan
 );

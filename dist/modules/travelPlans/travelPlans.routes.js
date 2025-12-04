@@ -13,7 +13,7 @@ const travelPlanRoute = express_1.default.Router();
 travelPlanRoute.post("/", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER), (0, zodValidateRequest_1.zodValidateRequest)(travelPlans_zod_validation_1.createTravelPlanZodSchema), travelPlans_controller_1.TravelController.createTravelPlan);
 // 2. Get Matches
 travelPlanRoute.get("/matches", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER), travelPlans_controller_1.TravelController.getTravelPlanMatches);
-travelPlanRoute.get("/", travelPlans_controller_1.TravelController.getAllTravelPlans);
+travelPlanRoute.get("/", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER, client_1.UserRole.ADMIN), travelPlans_controller_1.TravelController.getAllTravelPlans);
 travelPlanRoute.get("/:id", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER, client_1.UserRole.ADMIN), travelPlans_controller_1.TravelController.getTravelPlanById);
 travelPlanRoute.patch("/:id", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER), (0, zodValidateRequest_1.zodValidateRequest)(travelPlans_zod_validation_1.updateTravelPlanZodSchema), travelPlans_controller_1.TravelController.updateTravelPlan);
 travelPlanRoute.delete("/:id", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER, client_1.UserRole.ADMIN), travelPlans_controller_1.TravelController.deleteTravelPlan);
