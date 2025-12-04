@@ -4,6 +4,7 @@ import AppError from "../../errorHelpers/AppError";
 import { calculatePagination, TOptions } from "../../utils/pagenationHelpers";
 import { ITravelPlan } from "./travelPlans.interface";
 import { IJwtPayload } from "../../types/common";
+import httpStatus from "http-status";
 
 //create travel plan
 const createTravelPlan = async (plan: ITravelPlan, travelerEmail: string) => {
@@ -42,6 +43,45 @@ const createTravelPlan = async (plan: ITravelPlan, travelerEmail: string) => {
   });
 
   return result;
+};
+
+const getMyTravelPlans = async (user: IJwtPayload, options: TOptions) => {
+  const { page, limit, skip, sortBy, sortOrder } = calculatePagination(options);
+
+  const traveler = await prisma.traveler.findUnique({
+    where: {
+      email: user.email,
+    },
+  });
+
+  if (!traveler) {
+    throw new AppError(httpStatus.NOT_FOUND, "Traveler profile not found");
+  }
+
+  const whereConditions: Prisma.TravelPlanWhereInput = {
+    travelerId: traveler.id, // Relation Field
+  };
+
+  const result = await prisma.travelPlan.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+  });
+
+  const total = await prisma.travelPlan.count({ where: whereConditions });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+    data: result,
+  };
 };
 
 const getTravelPlanMatches = async (user: IJwtPayload) => {
@@ -250,6 +290,7 @@ const deleteTravelPlan = async (id: string, travelerData: IJwtPayload) => {
 
 export const TravelService = {
   createTravelPlan,
+  getMyTravelPlans,
   getTravelPlanById,
   getAllTravelPlans,
   updateTravelPlan,
