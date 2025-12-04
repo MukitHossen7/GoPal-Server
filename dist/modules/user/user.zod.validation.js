@@ -23,4 +23,5 @@ exports.updateTravelerProfileZodSchema = zod_1.default.object({
     travelInterests: zod_1.default.array(zod_1.default.string()).optional(),
     visitedCountries: zod_1.default.array(zod_1.default.string()).optional(),
     currentLocation: zod_1.default.string().optional(),
+    gender: zod_1.default.enum(["MALE", "FEMALE", "OTHER"]).optional(),
 });

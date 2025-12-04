@@ -139,6 +139,7 @@ const getMyProfile = (user) => __awaiter(void 0, void 0, void 0, function* () {
                             needPasswordChange: true,
                             role: true,
                             status: true,
+                            gender: true,
                         },
                     },
                 },
@@ -155,6 +156,7 @@ const getMyProfile = (user) => __awaiter(void 0, void 0, void 0, function* () {
                             needPasswordChange: true,
                             role: true,
                             status: true,
+                            gender: true,
                         },
                     },
                 },
@@ -188,30 +190,46 @@ const register = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     }));
     return createTraveler;
 });
-const updateMyProfile = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const updateMyProfile = (user, payload // Gender payload এ থাকতে পারে তাই টাইপ এক্সটেন্ড করা হলো
+) => __awaiter(void 0, void 0, void 0, function* () {
     const email = user === null || user === void 0 ? void 0 : user.email;
     const role = user === null || user === void 0 ? void 0 : user.role;
     if (!email) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Unauthorized user");
     }
-    // Email should never be updated
+    // Email should never be updated via this route
     if (payload.email) {
         delete payload.email;
     }
     let updatedProfile;
-    // If user is TRAVELER
+    // =========================================================
+    // CASE 1: If user is TRAVELER
+    // =========================================================
     if (role === client_1.UserRole.TRAVELER) {
-        const traveler = yield db_1.prisma.traveler.findUnique({ where: { email } });
-        if (!traveler) {
-            throw new AppError_1.default(404, "Traveler profile not found");
-        }
-        updatedProfile = yield db_1.prisma.traveler.update({
-            where: { email },
-            data: Object.assign(Object.assign({}, payload), { updatedAt: new Date() }),
-        });
+        const { gender } = payload, travelerData = __rest(payload, ["gender"]);
+        updatedProfile = yield db_1.prisma.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+            const traveler = yield tx.traveler.findUnique({ where: { email } });
+            if (!traveler) {
+                throw new AppError_1.default(404, "Traveler profile not found");
+            }
+            // ৩. Traveler
+            const result = yield tx.traveler.update({
+                where: { email },
+                data: Object.assign(Object.assign({}, travelerData), { updatedAt: new Date() }),
+            });
+            if (gender) {
+                yield tx.user.update({
+                    where: { email },
+                    data: { gender: gender },
+                });
+            }
+            return result;
+        }));
         return updatedProfile;
     }
-    // If user is ADMIN
+    // =========================================================
+    // CASE 2: If user is ADMIN
+    // =========================================================
     if (role === client_1.UserRole.ADMIN) {
         const admin = yield db_1.prisma.admin.findUnique({ where: { email } });
         if (!admin) {

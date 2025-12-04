@@ -68,6 +68,7 @@ const updateMyProfile = catchAsync(
       ...req.body,
       profileImage: req.file?.path,
     };
+
     const result = await UserService.updateMyProfile(user, payload);
     sendResponse(res, {
       statusCode: 200,

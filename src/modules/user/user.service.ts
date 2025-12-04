@@ -151,6 +151,7 @@ const getMyProfile = async (user: IJwtPayload) => {
               needPasswordChange: true,
               role: true,
               status: true,
+              gender: true,
             },
           },
         },
