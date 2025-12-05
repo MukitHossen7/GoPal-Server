@@ -39,4 +39,6 @@ userRoute.patch(
   UserController.updateMyProfile
 );
 
+userRoute.get("/:id", UserController.getTravelerById);
+
 export default userRoute;

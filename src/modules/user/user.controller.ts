@@ -5,6 +5,7 @@ import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import { UserService } from "./user.service";
 import { pick } from "../../utils/pick";
+import AppError from "../../errorHelpers/AppError";
 
 const getAllTravelers = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, ["searchTerm", "currentLocation", "gender"]);
@@ -33,6 +34,23 @@ const getTravelBuddyMatches = catchAsync(
     });
   }
 );
+
+const getTravelerById = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const result = await UserService.getTravelerById(id);
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, "Traveler not found!");
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Traveler retrieved successfully",
+    data: result,
+  });
+});
 
 const getMyProfile = catchAsync(
   async (req: Request & { user?: IJwtPayload }, res: Response) => {
@@ -82,6 +100,7 @@ const updateMyProfile = catchAsync(
 export const UserController = {
   getAllTravelers,
   getMyProfile,
+  getTravelerById,
   register,
   updateMyProfile,
   getTravelBuddyMatches,

@@ -137,6 +137,17 @@ const getRecommendedTravelers = async (user: IJwtPayload) => {
   return matchedTravelers;
 };
 
+const getTravelerById = async (id: string) => {
+  const result = await prisma.traveler.findUnique({
+    where: {
+      id: id,
+    },
+
+    // include: { reviews: true }
+  });
+  return result;
+};
+
 const getMyProfile = async (user: IJwtPayload) => {
   if (!user?.email || !user?.role) {
     throw new Error("Invalid user token");
@@ -299,6 +310,7 @@ const updateMyProfile = async (
 export const UserService = {
   getMyProfile,
   getAllTravelers,
+  getTravelerById,
   register,
   updateMyProfile,
   getRecommendedTravelers,

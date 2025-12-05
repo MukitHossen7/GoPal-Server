@@ -210,6 +210,7 @@ const getTravelPlanById = async (id: string) => {
     include: {
       traveler: {
         select: {
+          id: true,
           name: true,
           email: true,
           averageRating: true,
