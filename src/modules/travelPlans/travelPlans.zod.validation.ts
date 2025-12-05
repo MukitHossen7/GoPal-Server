@@ -4,7 +4,6 @@ export const createTravelPlanZodSchema = z
   .object({
     title: z.string().min(3, "Title must be at least 3 characters"),
     description: z.string().optional(),
-    imageUrl: z.string().url("Image URL must be a valid URL").optional(),
     destination: z.string().min(2, "Destination must be at least 2 characters"),
     startDate: z.preprocess((arg) => {
       if (typeof arg === "string" || arg instanceof Date) return new Date(arg);
@@ -16,6 +15,7 @@ export const createTravelPlanZodSchema = z
     travelType: z.enum(["GROUP", "COUPLE", "FRIENDS", "FAMILY", "SOLO"], {
       error: "Travel type  is required",
     }),
+    visibility: z.boolean(),
   })
   .refine((data) => data.endDate >= data.startDate, {
     message: "End date must be after start date",
@@ -45,6 +45,7 @@ export const updateTravelPlanZodSchema = z
         error: "Travel type  is required",
       })
       .optional(),
+    visibility: z.boolean().optional(),
   })
   .refine(
     (data) => {

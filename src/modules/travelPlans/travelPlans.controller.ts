@@ -91,6 +91,7 @@ const updateTravelPlan = catchAsync(
       imageUrl: req.file?.path,
     };
     const travelerData = req.user as IJwtPayload;
+
     const result = await TravelService.updateTravelPlan(
       travelPlanId,
       payload,
