@@ -4,6 +4,13 @@ import { UserRole } from "@prisma/client";
 import { TripRequestController } from "./tripRequest.controller";
 
 const tripRequestRoute = express.Router();
+
+tripRequestRoute.get(
+  "/my-request",
+  checkAuth(UserRole.TRAVELER),
+  TripRequestController.getMyTripRequest
+);
+
 // Send a request to join a trip
 tripRequestRoute.post(
   "/request",

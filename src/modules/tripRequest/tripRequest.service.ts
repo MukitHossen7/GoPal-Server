@@ -64,6 +64,42 @@ const requestToJoin = async (user: IJwtPayload, travelPlanId: string) => {
   return result;
 };
 
+const getMyTripRequests = async (user: IJwtPayload) => {
+  const traveler = await prisma.traveler.findUniqueOrThrow({
+    where: {
+      email: user.email,
+    },
+  });
+
+  const result = await prisma.tripRequest.findMany({
+    where: {
+      travelerId: traveler.id,
+    },
+    include: {
+      travelPlan: {
+        include: {
+          traveler: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              profileImage: true,
+              contactNumber: true,
+            },
+          },
+        },
+      },
+
+      // traveler: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return result;
+};
+
 // For Trip Owner to see who wants to join
 const getIncomingRequests = async (user: IJwtPayload) => {
   const traveler = await prisma.traveler.findUnique({
@@ -123,6 +159,7 @@ const respondToRequest = async (
 
 export const TripRequestService = {
   requestToJoin,
+  getMyTripRequests,
   getIncomingRequests,
   respondToRequest,
 };

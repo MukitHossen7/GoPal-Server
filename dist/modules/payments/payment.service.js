@@ -19,7 +19,7 @@ const db_1 = require("../../config/db");
 const stripe_config_1 = require("../../config/stripe.config");
 // 1. Create Checkout Session for Subscription
 const createSubscriptionSession = (payload, travelerData) => __awaiter(void 0, void 0, void 0, function* () {
-    const { amount, subscription } = payload;
+    const { amount, subscriptionType } = payload;
     // Traveler valid kina check kora uchit
     const traveler = yield db_1.prisma.traveler.findUniqueOrThrow({
         where: { email: travelerData.email },
@@ -32,8 +32,8 @@ const createSubscriptionSession = (payload, travelerData) => __awaiter(void 0, v
                 price_data: {
                     currency: "usd",
                     product_data: {
-                        name: `Travel Buddy ${subscription} Subscription`,
-                        description: `Get verified badge and unlock ${subscription} features.`,
+                        name: `Travel Buddy ${subscriptionType} Subscription`,
+                        description: `Get verified badge and unlock ${subscriptionType} features.`,
                     },
                     unit_amount: Math.round(amount * 100), // Amount in cents
                 },
@@ -41,12 +41,12 @@ const createSubscriptionSession = (payload, travelerData) => __awaiter(void 0, v
             },
         ],
         mode: "payment", // Subscription model holeo one-time payment hisebe Verified badge deya hoche
-        success_url: config_1.default.STRIPE.success_url,
+        success_url: `${config_1.default.STRIPE.success_url}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: config_1.default.STRIPE.cancel_url,
         customer_email: traveler.email,
         metadata: {
             travelerId: traveler.id,
-            subscriptionType: subscription,
+            subscriptionType: subscriptionType,
         },
     });
     // Save Initial Payment Record to DB (PENDING)
@@ -54,7 +54,7 @@ const createSubscriptionSession = (payload, travelerData) => __awaiter(void 0, v
         data: {
             amount: amount,
             status: client_1.PaymentStatus.PENDING,
-            subscription: subscription,
+            subscription: subscriptionType,
             transactionId: session.id, // Creating transaction ID from session ID
             travelerId: traveler.id,
         },

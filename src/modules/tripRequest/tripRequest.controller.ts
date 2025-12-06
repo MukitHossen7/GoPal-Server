@@ -18,6 +18,23 @@ const sendTripRequest = catchAsync(
   }
 );
 
+const getMyTripRequest = catchAsync(
+  async (req: Request & { user?: IJwtPayload }, res: Response) => {
+    const user = req.user;
+
+    const result = await TripRequestService.getMyTripRequests(
+      user as IJwtPayload
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "My trip requests retrieved successfully",
+      data: result,
+    });
+  }
+);
+
 const getIncomingRequests = catchAsync(
   async (req: Request & { user?: IJwtPayload }, res: Response) => {
     const user = req.user as IJwtPayload;
@@ -51,6 +68,7 @@ const respondToRequest = catchAsync(
 
 export const TripRequestController = {
   sendTripRequest,
+  getMyTripRequest,
   getIncomingRequests,
   respondToRequest,
 };
