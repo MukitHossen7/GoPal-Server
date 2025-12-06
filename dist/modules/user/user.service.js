@@ -33,7 +33,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const pagenationHelpers_1 = require("../../utils/pagenationHelpers");
 const getAllTravelers = (filters, options) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip, sortBy, sortOrder } = (0, pagenationHelpers_1.calculatePagination)(options);
-    const { searchTerm } = filters, filterData = __rest(filters, ["searchTerm"]);
+    const { searchTerm, gender } = filters, filterData = __rest(filters, ["searchTerm", "gender"]);
     const andConditions = [];
     if (searchTerm) {
         andConditions.push({
@@ -42,6 +42,15 @@ const getAllTravelers = (filters, options) => __awaiter(void 0, void 0, void 0, 
                 { bio: { contains: searchTerm, mode: "insensitive" } },
                 { currentLocation: { contains: searchTerm, mode: "insensitive" } },
             ],
+        });
+    }
+    if (gender) {
+        andConditions.push({
+            user: {
+                gender: {
+                    equals: gender,
+                },
+            },
         });
     }
     if (Object.keys(filterData).length > 0) {
@@ -92,10 +101,17 @@ const getRecommendedTravelers = (user) => __awaiter(void 0, void 0, void 0, func
                 id: true,
                 name: true,
                 email: true,
+                contactNumber: true,
+                address: true,
                 profileImage: true,
+                bio: true,
                 travelInterests: true,
+                visitedCountries: true,
+                isVerifiedTraveler: true,
+                subscriptionEndDate: true,
                 averageRating: true,
                 currentLocation: true,
+                createdAt: true,
             },
         });
     }
@@ -114,13 +130,29 @@ const getRecommendedTravelers = (user) => __awaiter(void 0, void 0, void 0, func
             id: true,
             name: true,
             email: true,
+            contactNumber: true,
+            address: true,
             profileImage: true,
+            bio: true,
             travelInterests: true,
+            visitedCountries: true,
+            isVerifiedTraveler: true,
+            subscriptionEndDate: true,
             averageRating: true,
             currentLocation: true,
+            createdAt: true,
         },
     });
     return matchedTravelers;
+});
+const getTravelerById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield db_1.prisma.traveler.findUnique({
+        where: {
+            id: id,
+        },
+        // include: { reviews: true }
+    });
+    return result;
 });
 const getMyProfile = (user) => __awaiter(void 0, void 0, void 0, function* () {
     if (!(user === null || user === void 0 ? void 0 : user.email) || !(user === null || user === void 0 ? void 0 : user.role)) {
@@ -246,6 +278,7 @@ const updateMyProfile = (user, payload // Gender payload এ থাকতে প
 exports.UserService = {
     getMyProfile,
     getAllTravelers,
+    getTravelerById,
     register,
     updateMyProfile,
     getRecommendedTravelers,

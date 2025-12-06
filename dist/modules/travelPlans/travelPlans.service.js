@@ -198,6 +198,7 @@ const getTravelPlanById = (id) => __awaiter(void 0, void 0, void 0, function* ()
         include: {
             traveler: {
                 select: {
+                    id: true,
                     name: true,
                     email: true,
                     averageRating: true,

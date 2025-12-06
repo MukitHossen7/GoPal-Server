@@ -18,8 +18,9 @@ const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
 const user_service_1 = require("./user.service");
 const pick_1 = require("../../utils/pick");
+const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const getAllTravelers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const filters = (0, pick_1.pick)(req.query, ["searchTerm", "currentLocation"]);
+    const filters = (0, pick_1.pick)(req.query, ["searchTerm", "currentLocation", "gender"]);
     const options = (0, pick_1.pick)(req.query, ["page", "limit", "sortBy", "sortOrder"]);
     const result = yield user_service_1.UserService.getAllTravelers(filters, options);
     (0, sendResponse_1.default)(res, {
@@ -37,6 +38,19 @@ const getTravelBuddyMatches = (0, catchAsync_1.default)((req, res) => __awaiter(
         statusCode: 200,
         success: true,
         message: "Recommended travelers retrieved successfully",
+        data: result,
+    });
+}));
+const getTravelerById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield user_service_1.UserService.getTravelerById(id);
+    if (!result) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Traveler not found!");
+    }
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Traveler retrieved successfully",
         data: result,
     });
 }));
@@ -77,6 +91,7 @@ const updateMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
 exports.UserController = {
     getAllTravelers,
     getMyProfile,
+    getTravelerById,
     register,
     updateMyProfile,
     getTravelBuddyMatches,

@@ -9,7 +9,6 @@ exports.createTravelPlanZodSchema = zod_1.default
     .object({
     title: zod_1.default.string().min(3, "Title must be at least 3 characters"),
     description: zod_1.default.string().optional(),
-    imageUrl: zod_1.default.string().url("Image URL must be a valid URL").optional(),
     destination: zod_1.default.string().min(2, "Destination must be at least 2 characters"),
     startDate: zod_1.default.preprocess((arg) => {
         if (typeof arg === "string" || arg instanceof Date)
@@ -23,6 +22,7 @@ exports.createTravelPlanZodSchema = zod_1.default
     travelType: zod_1.default.enum(["GROUP", "COUPLE", "FRIENDS", "FAMILY", "SOLO"], {
         error: "Travel type  is required",
     }),
+    visibility: zod_1.default.boolean(),
 })
     .refine((data) => data.endDate >= data.startDate, {
     message: "End date must be after start date",
@@ -55,6 +55,7 @@ exports.updateTravelPlanZodSchema = zod_1.default
         error: "Travel type  is required",
     })
         .optional(),
+    visibility: zod_1.default.boolean().optional(),
 })
     .refine((data) => {
     if (data.startDate && data.endDate)

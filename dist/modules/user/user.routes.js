@@ -16,4 +16,5 @@ userRoute.get("/matches", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER)
 userRoute.get("/me", (0, checkAuth_1.checkAuth)(client_1.UserRole.ADMIN, client_1.UserRole.TRAVELER), user_controller_1.UserController.getMyProfile);
 userRoute.post("/register", (0, zodValidateRequest_1.zodValidateRequest)(user_zod_validation_1.createTravelerZodSchema), user_controller_1.UserController.register);
 userRoute.patch("/update-my-profile", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER, client_1.UserRole.ADMIN), multer_config_1.multerUpload.single("file"), (0, zodValidateRequest_1.zodValidateRequest)(user_zod_validation_1.updateTravelerProfileZodSchema), user_controller_1.UserController.updateMyProfile);
+userRoute.get("/:id", user_controller_1.UserController.getTravelerById);
 exports.default = userRoute;

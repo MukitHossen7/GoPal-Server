@@ -10,7 +10,7 @@ const createSubscriptionSession = async (
   payload: any,
   travelerData: IJwtPayload
 ) => {
-  const { amount, subscription } = payload;
+  const { amount, subscriptionType } = payload;
 
   // Traveler valid kina check kora uchit
   const traveler = await prisma.traveler.findUniqueOrThrow({
@@ -25,8 +25,8 @@ const createSubscriptionSession = async (
         price_data: {
           currency: "usd",
           product_data: {
-            name: `Travel Buddy ${subscription} Subscription`,
-            description: `Get verified badge and unlock ${subscription} features.`,
+            name: `Travel Buddy ${subscriptionType} Subscription`,
+            description: `Get verified badge and unlock ${subscriptionType} features.`,
           },
           unit_amount: Math.round(amount * 100), // Amount in cents
         },
@@ -34,12 +34,12 @@ const createSubscriptionSession = async (
       },
     ],
     mode: "payment", // Subscription model holeo one-time payment hisebe Verified badge deya hoche
-    success_url: config.STRIPE.success_url as string,
+    success_url: `${config.STRIPE.success_url}?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: config.STRIPE.cancel_url as string,
     customer_email: traveler.email,
     metadata: {
       travelerId: traveler.id,
-      subscriptionType: subscription,
+      subscriptionType: subscriptionType,
     },
   });
 
@@ -48,7 +48,7 @@ const createSubscriptionSession = async (
     data: {
       amount: amount,
       status: PaymentStatus.PENDING,
-      subscription: subscription,
+      subscription: subscriptionType,
       transactionId: session.id, // Creating transaction ID from session ID
       travelerId: traveler.id,
     },
