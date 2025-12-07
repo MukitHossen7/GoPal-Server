@@ -259,31 +259,39 @@ const updateTravelPlan = async (
 };
 
 const deleteTravelPlan = async (id: string, travelerData: IJwtPayload) => {
-  const traveler = await prisma.traveler.findUnique({
-    where: {
-      email: travelerData.email,
-    },
-  });
+  let traveler = null;
 
-  if (!traveler) {
-    throw new AppError(404, "Traveler not found");
+  // If not admin → fetch traveler info
+  if (travelerData.role !== UserRole.ADMIN) {
+    traveler = await prisma.traveler.findUnique({
+      where: { email: travelerData.email },
+    });
+
+    if (!traveler) {
+      throw new AppError(404, "Traveler not found");
+    }
   }
 
   // Check if travel plan exists
-  const travelPlan = await prisma.travelPlan.findUnique({ where: { id: id } });
+  const travelPlan = await prisma.travelPlan.findUnique({
+    where: { id },
+  });
 
-  if (!travelPlan) throw new AppError(404, "Travel Plan not found");
+  if (!travelPlan) {
+    throw new AppError(404, "Travel Plan not found");
+  }
 
-  // Check permission: either owner traveler or admin
+  // Permission check
   if (
     travelerData.role !== UserRole.ADMIN &&
-    travelPlan.travelerId !== traveler.id
+    travelPlan.travelerId !== traveler?.id
   ) {
     throw new AppError(403, "You are not allowed to delete this travel plan");
   }
 
+  // Admin OR owner traveler → delete
   const deletedPlan = await prisma.travelPlan.delete({
-    where: { id: id },
+    where: { id },
   });
 
   return deletedPlan;
