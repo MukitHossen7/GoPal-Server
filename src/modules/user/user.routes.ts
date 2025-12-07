@@ -39,6 +39,12 @@ userRoute.patch(
   UserController.updateMyProfile
 );
 
+userRoute.delete(
+  "/soft-delete/:travelerId",
+  checkAuth(UserRole.ADMIN),
+  UserController.softDeleteUser
+);
+
 userRoute.get("/:id", UserController.getTravelerById);
 
 export default userRoute;

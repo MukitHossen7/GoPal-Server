@@ -18,6 +18,20 @@ const getTravelerDashboardData = catchAsync(
   }
 );
 
+const getAdminDashboardData = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await StatsService.getAdminDashboardData();
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Admin Dashboard data retrieved successfully",
+      data: result,
+    });
+  }
+);
+
 export const StatsController = {
   getTravelerDashboardData,
+  getAdminDashboardData,
 };

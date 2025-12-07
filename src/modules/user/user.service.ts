@@ -1,4 +1,4 @@
-import { Gender, Prisma, UserRole } from "@prisma/client";
+import { Gender, Prisma, UserRole, UserStatus } from "@prisma/client";
 import config from "../../config";
 import { prisma } from "../../config/db";
 import AppError from "../../errorHelpers/AppError";
@@ -51,6 +51,14 @@ const getAllTravelers = async (filters: any, options: TOptions) => {
     take: limit,
     orderBy: {
       [sortBy]: sortOrder,
+    },
+    include: {
+      user: {
+        select: {
+          isDeleted: true,
+          isVerified: true,
+        },
+      },
     },
   });
 
@@ -307,6 +315,30 @@ const updateMyProfile = async (
   return updatedProfile;
 };
 
+const softDeleteUser = async (travelerId: string) => {
+  // 1. Find the traveler to get the email
+  const traveler = await prisma.traveler.findUnique({
+    where: { id: travelerId },
+  });
+
+  if (!traveler) {
+    throw new AppError(httpStatus.NOT_FOUND, "Traveler not found");
+  }
+
+  // 2. Update the User table using the email
+  const result = await prisma.user.update({
+    where: {
+      email: traveler.email,
+    },
+    data: {
+      isDeleted: true,
+      status: UserStatus.INACTIVE, // Optional: Status টাও Inactive করে দেয়া ভালো
+    },
+  });
+
+  return result;
+};
+
 export const UserService = {
   getMyProfile,
   getAllTravelers,
@@ -314,4 +346,5 @@ export const UserService = {
   register,
   updateMyProfile,
   getRecommendedTravelers,
+  softDeleteUser,
 };

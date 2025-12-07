@@ -8,6 +8,7 @@ import { pick } from "../../utils/pick";
 const addReview = catchAsync(
   async (req: Request & { user?: IJwtPayload }, res: Response) => {
     const user = req.user as IJwtPayload;
+
     const result = await ReviewService.addReview(user, req.body);
     sendResponse(res, {
       statusCode: 201,

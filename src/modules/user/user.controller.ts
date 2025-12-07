@@ -97,6 +97,18 @@ const updateMyProfile = catchAsync(
   }
 );
 
+const softDeleteUser = catchAsync(async (req: Request, res: Response) => {
+  const { travelerId } = req.params;
+  await UserService.softDeleteUser(travelerId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User deleted successfully",
+    data: null,
+  });
+});
+
 export const UserController = {
   getAllTravelers,
   getMyProfile,
@@ -104,4 +116,5 @@ export const UserController = {
   register,
   updateMyProfile,
   getTravelBuddyMatches,
+  softDeleteUser,
 };

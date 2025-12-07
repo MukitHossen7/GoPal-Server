@@ -11,4 +11,10 @@ statsRoute.get(
   StatsController.getTravelerDashboardData
 );
 
+// Admin Dashboard (New Route)
+statsRoute.get(
+  "/dashboard/admin",
+  checkAuth(UserRole.ADMIN),
+  StatsController.getAdminDashboardData
+);
 export default statsRoute;
