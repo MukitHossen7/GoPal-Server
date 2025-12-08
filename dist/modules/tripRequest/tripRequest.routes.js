@@ -8,6 +8,7 @@ const checkAuth_1 = require("../../middlewares/checkAuth");
 const client_1 = require("@prisma/client");
 const tripRequest_controller_1 = require("./tripRequest.controller");
 const tripRequestRoute = express_1.default.Router();
+tripRequestRoute.get("/my-request", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER), tripRequest_controller_1.TripRequestController.getMyTripRequest);
 // Send a request to join a trip
 tripRequestRoute.post("/request", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER), tripRequest_controller_1.TripRequestController.sendTripRequest);
 // Get requests for my trips (As a host)

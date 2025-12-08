@@ -64,6 +64,38 @@ const requestToJoin = (user, travelPlanId) => __awaiter(void 0, void 0, void 0, 
     });
     return result;
 });
+const getMyTripRequests = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    const traveler = yield db_1.prisma.traveler.findUniqueOrThrow({
+        where: {
+            email: user.email,
+        },
+    });
+    const result = yield db_1.prisma.tripRequest.findMany({
+        where: {
+            travelerId: traveler.id,
+        },
+        include: {
+            travelPlan: {
+                include: {
+                    traveler: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            profileImage: true,
+                            contactNumber: true,
+                        },
+                    },
+                },
+            },
+            // traveler: true,
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+    return result;
+});
 // For Trip Owner to see who wants to join
 const getIncomingRequests = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const traveler = yield db_1.prisma.traveler.findUnique({
@@ -110,6 +142,7 @@ const respondToRequest = (user, requestId, status) => __awaiter(void 0, void 0, 
 });
 exports.TripRequestService = {
     requestToJoin,
+    getMyTripRequests,
     getIncomingRequests,
     respondToRequest,
 };

@@ -27,6 +27,16 @@ const sendTripRequest = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
         data: result,
     });
 }));
+const getMyTripRequest = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const result = yield tripRequest_service_1.TripRequestService.getMyTripRequests(user);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "My trip requests retrieved successfully",
+        data: result,
+    });
+}));
 const getIncomingRequests = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = req.user;
     const result = yield tripRequest_service_1.TripRequestService.getIncomingRequests(user);
@@ -50,6 +60,7 @@ const respondToRequest = (0, catchAsync_1.default)((req, res) => __awaiter(void 
 }));
 exports.TripRequestController = {
     sendTripRequest,
+    getMyTripRequest,
     getIncomingRequests,
     respondToRequest,
 };

@@ -88,6 +88,16 @@ const updateMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
         data: result,
     });
 }));
+const softDeleteUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { travelerId } = req.params;
+    yield user_service_1.UserService.softDeleteUser(travelerId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "User deleted successfully",
+        data: null,
+    });
+}));
 exports.UserController = {
     getAllTravelers,
     getMyProfile,
@@ -95,4 +105,5 @@ exports.UserController = {
     register,
     updateMyProfile,
     getTravelBuddyMatches,
+    softDeleteUser,
 };

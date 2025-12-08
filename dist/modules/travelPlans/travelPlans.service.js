@@ -236,25 +236,31 @@ const updateTravelPlan = (id, payload, travelerData) => __awaiter(void 0, void 0
     return updatedPlan;
 });
 const deleteTravelPlan = (id, travelerData) => __awaiter(void 0, void 0, void 0, function* () {
-    const traveler = yield db_1.prisma.traveler.findUnique({
-        where: {
-            email: travelerData.email,
-        },
-    });
-    if (!traveler) {
-        throw new AppError_1.default(404, "Traveler not found");
+    let traveler = null;
+    // If not admin → fetch traveler info
+    if (travelerData.role !== client_1.UserRole.ADMIN) {
+        traveler = yield db_1.prisma.traveler.findUnique({
+            where: { email: travelerData.email },
+        });
+        if (!traveler) {
+            throw new AppError_1.default(404, "Traveler not found");
+        }
     }
     // Check if travel plan exists
-    const travelPlan = yield db_1.prisma.travelPlan.findUnique({ where: { id: id } });
-    if (!travelPlan)
+    const travelPlan = yield db_1.prisma.travelPlan.findUnique({
+        where: { id },
+    });
+    if (!travelPlan) {
         throw new AppError_1.default(404, "Travel Plan not found");
-    // Check permission: either owner traveler or admin
+    }
+    // Permission check
     if (travelerData.role !== client_1.UserRole.ADMIN &&
-        travelPlan.travelerId !== traveler.id) {
+        travelPlan.travelerId !== (traveler === null || traveler === void 0 ? void 0 : traveler.id)) {
         throw new AppError_1.default(403, "You are not allowed to delete this travel plan");
     }
+    // Admin OR owner traveler → delete
     const deletedPlan = yield db_1.prisma.travelPlan.delete({
-        where: { id: id },
+        where: { id },
     });
     return deletedPlan;
 });

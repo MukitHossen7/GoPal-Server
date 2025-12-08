@@ -11,6 +11,7 @@ const payments_routes_1 = __importDefault(require("../modules/payments/payments.
 const reviews_routes_1 = __importDefault(require("../modules/reviews/reviews.routes"));
 const tripRequest_routes_1 = __importDefault(require("../modules/tripRequest/tripRequest.routes"));
 const stats_routes_1 = __importDefault(require("../modules/stats/stats.routes"));
+const activity_routes_1 = __importDefault(require("../modules/activity/activity.routes"));
 const routes = (0, express_1.Router)();
 routes.use("/auth", auth_routes_1.default);
 routes.use("/users", user_routes_1.default);
@@ -19,4 +20,5 @@ routes.use("/payments", payments_routes_1.default);
 routes.use("/reviews", reviews_routes_1.default);
 routes.use("/trip-requests", tripRequest_routes_1.default);
 routes.use("/stats", stats_routes_1.default);
+routes.use("/activities", activity_routes_1.default);
 exports.default = routes;

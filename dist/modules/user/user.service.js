@@ -70,6 +70,14 @@ const getAllTravelers = (filters, options) => __awaiter(void 0, void 0, void 0, 
         orderBy: {
             [sortBy]: sortOrder,
         },
+        include: {
+            user: {
+                select: {
+                    isDeleted: true,
+                    isVerified: true,
+                },
+            },
+        },
     });
     const total = yield db_1.prisma.traveler.count({ where: whereConditions });
     return {
@@ -275,6 +283,26 @@ const updateMyProfile = (user, payload // Gender payload এ থাকতে প
     }
     return updatedProfile;
 });
+const softDeleteUser = (travelerId) => __awaiter(void 0, void 0, void 0, function* () {
+    // 1. Find the traveler to get the email
+    const traveler = yield db_1.prisma.traveler.findUnique({
+        where: { id: travelerId },
+    });
+    if (!traveler) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Traveler not found");
+    }
+    // 2. Update the User table using the email
+    const result = yield db_1.prisma.user.update({
+        where: {
+            email: traveler.email,
+        },
+        data: {
+            isDeleted: true,
+            status: client_1.UserStatus.INACTIVE, // Optional: Status টাও Inactive করে দেয়া ভালো
+        },
+    });
+    return result;
+});
 exports.UserService = {
     getMyProfile,
     getAllTravelers,
@@ -282,4 +310,5 @@ exports.UserService = {
     register,
     updateMyProfile,
     getRecommendedTravelers,
+    softDeleteUser,
 };
