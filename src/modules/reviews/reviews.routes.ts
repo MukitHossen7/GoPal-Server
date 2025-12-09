@@ -17,7 +17,11 @@ reviewRoute.post(
   ReviewController.addReview
 );
 
-reviewRoute.get("/:planId", ReviewController.getReviewsForPlan);
+reviewRoute.get(
+  "/my-reviews",
+  checkAuth(UserRole.TRAVELER),
+  ReviewController.getMyReviews
+);
 
 // Admin can see all reviews (Optional: Remove checkAuth if public)
 reviewRoute.get(
@@ -25,6 +29,8 @@ reviewRoute.get(
   // checkAuth(UserRole.ADMIN), // Uncomment if only admin should see ALL reviews list
   ReviewController.getAllReviews
 );
+
+reviewRoute.get("/:planId", ReviewController.getReviewsForPlan);
 
 reviewRoute.patch(
   "/:reviewId",

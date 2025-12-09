@@ -19,6 +19,20 @@ const addReview = catchAsync(
   }
 );
 
+const getMyReviews = catchAsync(
+  async (req: Request & { user?: IJwtPayload }, res: Response) => {
+    const user = req.user as IJwtPayload;
+    const result = await ReviewService.getMyReviews(user);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "My reviews retrieved successfully",
+      data: result,
+    });
+  }
+);
+
 const getReviewsForPlan = catchAsync(async (req: Request, res: Response) => {
   const { planId } = req.params;
   const result = await ReviewService.getReviewsForTravelPlan(planId);
@@ -72,6 +86,7 @@ const deleteReview = catchAsync(
 
 export const ReviewController = {
   addReview,
+  getMyReviews,
   getReviewsForPlan,
   getAllReviews,
   updateReview,

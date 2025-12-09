@@ -69,6 +69,38 @@ const addReview = async (
   return review;
 };
 
+const getMyReviews = async (user: IJwtPayload) => {
+  // 1. Find the traveler
+  const traveler = await prisma.traveler.findUnique({
+    where: { email: user.email },
+  });
+
+  if (!traveler) throw new AppError(404, "Traveler profile not found");
+
+  // 2. Find reviews created by this traveler
+  const reviews = await prisma.review.findMany({
+    where: {
+      travelerId: traveler.id, // Only their reviews
+    },
+    include: {
+      travelPlan: {
+        select: {
+          id: true,
+          title: true,
+          destination: true,
+          startDate: true,
+          endDate: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return reviews;
+};
+
 const getReviewsForTravelPlan = async (travelPlanId: string) => {
   return await prisma.review.findMany({
     where: { travelPlanId },
@@ -185,6 +217,7 @@ const deleteReview = async (user: IJwtPayload, reviewId: string) => {
 
 export const ReviewService = {
   addReview,
+  getMyReviews,
   getReviewsForTravelPlan,
   getAllReviews,
   updateReview,

@@ -7,7 +7,7 @@ const setAuthCookie = (res, authToken) => {
             secure: true,
             httpOnly: true,
             sameSite: "none",
-            maxAge: 1000 * 60 * 60,
+            maxAge: 1000 * 60 * 60 * 24,
         });
     }
     if (authToken.refreshToken) {
