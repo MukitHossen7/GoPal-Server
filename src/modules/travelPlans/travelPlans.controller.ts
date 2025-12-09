@@ -69,7 +69,13 @@ const getTravelPlanById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllTravelPlans = catchAsync(async (req: Request, res: Response) => {
-  const filters = pick(req.query, ["searchTerm", "destination", "travelType"]);
+  const filters = pick(req.query, [
+    "searchTerm",
+    "destination",
+    "travelType",
+    "startDate",
+    "endDate",
+  ]);
   const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
 
   const result = await TravelService.getAllTravelPlans(filters, options);

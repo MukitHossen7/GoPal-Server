@@ -17,7 +17,7 @@ export const checkAuth =
     try {
       const token = req.headers.authorization || req.cookies.accessToken;
       if (!token) {
-        throw new AppError(401, "Access token is missing");
+        throw new AppError(401, "Please log in to continue.");
       }
 
       const verify_Token = verifyToken(

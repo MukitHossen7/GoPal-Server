@@ -69,6 +69,35 @@ const addReview = (user, payload) => __awaiter(void 0, void 0, void 0, function*
     }));
     return review;
 });
+const getMyReviews = (user) => __awaiter(void 0, void 0, void 0, function* () {
+    // 1. Find the traveler
+    const traveler = yield db_1.prisma.traveler.findUnique({
+        where: { email: user.email },
+    });
+    if (!traveler)
+        throw new AppError_1.default(404, "Traveler profile not found");
+    // 2. Find reviews created by this traveler
+    const reviews = yield db_1.prisma.review.findMany({
+        where: {
+            travelerId: traveler.id, // Only their reviews
+        },
+        include: {
+            travelPlan: {
+                select: {
+                    id: true,
+                    title: true,
+                    destination: true,
+                    startDate: true,
+                    endDate: true,
+                },
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+    return reviews;
+});
 const getReviewsForTravelPlan = (travelPlanId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield db_1.prisma.review.findMany({
         where: { travelPlanId },
@@ -163,6 +192,7 @@ const deleteReview = (user, reviewId) => __awaiter(void 0, void 0, void 0, funct
 });
 exports.ReviewService = {
     addReview,
+    getMyReviews,
     getReviewsForTravelPlan,
     getAllReviews,
     updateReview,

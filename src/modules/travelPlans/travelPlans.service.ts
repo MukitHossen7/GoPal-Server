@@ -147,7 +147,7 @@ const getTravelPlanMatches = async (user: IJwtPayload) => {
 //Get all Travel plans
 const getAllTravelPlans = async (filters: any, options: TOptions) => {
   const { page, limit, skip, sortBy, sortOrder } = calculatePagination(options);
-  const { searchTerm, ...filterData } = filters;
+  const { searchTerm, startDate, endDate, ...filterData } = filters;
 
   const andConditions: Prisma.TravelPlanWhereInput[] = [];
 
@@ -157,9 +157,10 @@ const getAllTravelPlans = async (filters: any, options: TOptions) => {
         { destination: { contains: searchTerm, mode: "insensitive" } },
         { title: { contains: searchTerm, mode: "insensitive" } },
       ],
-    } as any);
+    });
   }
 
+  // 2. Exact Match Filters (Like travelType, budgetRange)
   if (Object.keys(filterData).length > 0) {
     andConditions.push({
       AND: Object.keys(filterData).map((key) => ({
@@ -167,6 +168,25 @@ const getAllTravelPlans = async (filters: any, options: TOptions) => {
           equals: (filterData as any)[key],
         },
       })),
+    });
+  }
+
+  // 3. Date Range Search logic (NEW ADDITION)
+
+  if (startDate && endDate) {
+    andConditions.push({
+      AND: [
+        {
+          startDate: {
+            lte: new Date(startDate),
+          },
+        },
+        {
+          endDate: {
+            gte: new Date(endDate),
+          },
+        },
+      ],
     });
   }
 
@@ -185,6 +205,7 @@ const getAllTravelPlans = async (filters: any, options: TOptions) => {
         select: {
           name: true,
           email: true,
+          profileImage: true,
           averageRating: true,
         },
       },

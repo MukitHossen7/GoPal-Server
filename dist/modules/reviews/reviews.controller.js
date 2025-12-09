@@ -27,6 +27,16 @@ const addReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
         data: result,
     });
 }));
+const getMyReviews = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    const result = yield reviews_service_1.ReviewService.getMyReviews(user);
+    (0, sendResponse_1.default)(res, {
+        statusCode: 200,
+        success: true,
+        message: "My reviews retrieved successfully",
+        data: result,
+    });
+}));
 const getReviewsForPlan = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { planId } = req.params;
     const result = yield reviews_service_1.ReviewService.getReviewsForTravelPlan(planId);
@@ -72,6 +82,7 @@ const deleteReview = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
 }));
 exports.ReviewController = {
     addReview,
+    getMyReviews,
     getReviewsForPlan,
     getAllReviews,
     updateReview,

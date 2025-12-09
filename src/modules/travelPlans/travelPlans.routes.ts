@@ -33,14 +33,10 @@ travelPlanRoute.get(
   TravelController.getMyTravelPlans
 );
 
-travelPlanRoute.get(
-  "/",
-  checkAuth(UserRole.TRAVELER, UserRole.ADMIN),
-  TravelController.getAllTravelPlans
-);
+travelPlanRoute.get("/", TravelController.getAllTravelPlans);
 travelPlanRoute.get(
   "/:id",
-  checkAuth(UserRole.TRAVELER, UserRole.ADMIN),
+  // checkAuth(UserRole.TRAVELER, UserRole.ADMIN),
   TravelController.getTravelPlanById
 );
 
