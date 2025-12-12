@@ -22,7 +22,7 @@ const checkAuth = (...roles) => (req, res, next) => __awaiter(void 0, void 0, vo
     try {
         const token = req.headers.authorization || req.cookies.accessToken;
         if (!token) {
-            throw new AppError_1.default(401, "Access token is missing");
+            throw new AppError_1.default(401, "Please log in to continue.");
         }
         const verify_Token = (0, jwt_1.verifyToken)(token, config_1.default.JWT.ACCESS_TOKEN_SECRET);
         if (!verify_Token) {

@@ -144,7 +144,7 @@ const getTravelPlanMatches = (user) => __awaiter(void 0, void 0, void 0, functio
 //Get all Travel plans
 const getAllTravelPlans = (filters, options) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, skip, sortBy, sortOrder } = (0, pagenationHelpers_1.calculatePagination)(options);
-    const { searchTerm } = filters, filterData = __rest(filters, ["searchTerm"]);
+    const { searchTerm, startDate, endDate } = filters, filterData = __rest(filters, ["searchTerm", "startDate", "endDate"]);
     const andConditions = [];
     if (searchTerm) {
         andConditions.push({
@@ -154,6 +154,7 @@ const getAllTravelPlans = (filters, options) => __awaiter(void 0, void 0, void 0
             ],
         });
     }
+    // 2. Exact Match Filters (Like travelType, budgetRange)
     if (Object.keys(filterData).length > 0) {
         andConditions.push({
             AND: Object.keys(filterData).map((key) => ({
@@ -161,6 +162,23 @@ const getAllTravelPlans = (filters, options) => __awaiter(void 0, void 0, void 0
                     equals: filterData[key],
                 },
             })),
+        });
+    }
+    // 3. Date Range Search logic (NEW ADDITION)
+    if (startDate && endDate) {
+        andConditions.push({
+            AND: [
+                {
+                    startDate: {
+                        lte: new Date(startDate),
+                    },
+                },
+                {
+                    endDate: {
+                        gte: new Date(endDate),
+                    },
+                },
+            ],
         });
     }
     const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
@@ -176,6 +194,7 @@ const getAllTravelPlans = (filters, options) => __awaiter(void 0, void 0, void 0
                 select: {
                     name: true,
                     email: true,
+                    profileImage: true,
                     averageRating: true,
                 },
             },

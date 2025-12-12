@@ -16,8 +16,10 @@ travelPlanRoute.post("/", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER)
 travelPlanRoute.get("/matches", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER), travelPlans_controller_1.TravelController.getTravelPlanMatches);
 //get my travel plans
 travelPlanRoute.get("/my-plans", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER), travelPlans_controller_1.TravelController.getMyTravelPlans);
-travelPlanRoute.get("/", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER, client_1.UserRole.ADMIN), travelPlans_controller_1.TravelController.getAllTravelPlans);
-travelPlanRoute.get("/:id", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER, client_1.UserRole.ADMIN), travelPlans_controller_1.TravelController.getTravelPlanById);
+travelPlanRoute.get("/", travelPlans_controller_1.TravelController.getAllTravelPlans);
+travelPlanRoute.get("/:id", 
+// checkAuth(UserRole.TRAVELER, UserRole.ADMIN),
+travelPlans_controller_1.TravelController.getTravelPlanById);
 travelPlanRoute.patch("/:id", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER), multer_config_1.multerUpload.single("file"), (0, zodValidateRequest_1.zodValidateRequest)(travelPlans_zod_validation_1.updateTravelPlanZodSchema), travelPlans_controller_1.TravelController.updateTravelPlan);
 travelPlanRoute.delete("/:id", (0, checkAuth_1.checkAuth)(client_1.UserRole.TRAVELER, client_1.UserRole.ADMIN), travelPlans_controller_1.TravelController.deleteTravelPlan);
 exports.default = travelPlanRoute;

@@ -113,7 +113,7 @@ const getAllReviews = (options) => __awaiter(void 0, void 0, void 0, function* (
     const { page, limit, skip, sortBy, sortOrder } = (0, pagenationHelpers_1.calculatePagination)(options);
     const reviewData = yield db_1.prisma.review.findMany({
         include: {
-            traveler: { select: { name: true, email: true } },
+            traveler: { select: { name: true, email: true, profileImage: true } },
             travelPlan: { select: { title: true, destination: true } },
         },
         skip,

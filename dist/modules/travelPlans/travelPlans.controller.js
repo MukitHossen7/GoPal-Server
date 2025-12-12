@@ -62,7 +62,13 @@ const getTravelPlanById = (0, catchAsync_1.default)((req, res) => __awaiter(void
     });
 }));
 const getAllTravelPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const filters = (0, pick_1.pick)(req.query, ["searchTerm", "destination", "travelType"]);
+    const filters = (0, pick_1.pick)(req.query, [
+        "searchTerm",
+        "destination",
+        "travelType",
+        "startDate",
+        "endDate",
+    ]);
     const options = (0, pick_1.pick)(req.query, ["page", "limit", "sortBy", "sortOrder"]);
     const result = yield travelPlans_service_1.TravelService.getAllTravelPlans(filters, options);
     (0, sendResponse_1.default)(res, {

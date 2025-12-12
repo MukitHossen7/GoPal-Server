@@ -118,7 +118,7 @@ const getAllReviews = async (options: TOptions) => {
 
   const reviewData = await prisma.review.findMany({
     include: {
-      traveler: { select: { name: true, email: true } },
+      traveler: { select: { name: true, email: true, profileImage: true } },
       travelPlan: { select: { title: true, destination: true } },
     },
     skip,
